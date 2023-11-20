@@ -5,7 +5,7 @@ const MySQLStore = MySQLStore2(session);
 const options = {
   host: "localhost",
   user: "root",
-  database: "project-final",
+  database: "project_final",
   password: "1111",
 };
 
