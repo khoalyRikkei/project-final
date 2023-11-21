@@ -11,6 +11,16 @@ import {
 } from "./utils/jwt.js";
 import { isAdmin, isAuth } from "./middlewares/is-auth.js";
 
+import {
+  deleteCloudinary,
+  uploadToCloudinary,
+} from "./configs/clound.config.js";
+import { upload } from "./configs/multer.cofig.js";
+import { uploadFile } from "./middlewares/uploadFile.js";
+import { uploadFileFunction } from "./utils/clound.js";
+
+// const upload = multer({ dest: "uploads/" });
+
 const app = express();
 
 // Config
@@ -238,6 +248,38 @@ app.get("/api/v1/refreshToken", (req, res, next) => {
   } catch (error) {
     // Người dùng phải login lại
   }
+});
+
+app.post(
+  "/api/v1/admin/users/:id/upload-avatar",
+  upload.single("image"),
+  uploadFile,
+  async (req, res, next) => {
+    console.log(req.urlUpload);
+    console.log("ID", req.params.id);
+    if (req.urlUpload) {
+      const [data, fields] = await connection.execute(`
+      UPDATE users
+      SET avatar="${req.urlUpload}"
+      WHERE id=${req.params.id}
+      
+      `);
+
+      console.log("Kiểm tra data", data);
+      // Tien hành truy vấn và gửi file lên
+    }
+  }
+);
+
+app.post("/api/v1/admin/users/:id/delete-avatar", (req, res, next) => {
+  deleteCloudinary("cld-sample")
+    .then((result) => {
+      console.log(111, result);
+      res.json({ message: "success" });
+    })
+    .catch((err) => {
+      console.log(111, err);
+    });
 });
 
 app.listen(1111, () => {
