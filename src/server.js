@@ -17,13 +17,13 @@ import {
 } from "./configs/clound.config.js";
 import { upload } from "./configs/multer.cofig.js";
 import { uploadFile } from "./middlewares/uploadFile.js";
-import { uploadFileFunction } from "./utils/clound.js";
-
-// const upload = multer({ dest: "uploads/" });
+import cors from "cors";
+import { validationProduct } from "./middlewares/handleValidator.js";
 
 const app = express();
 
 // Config
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
@@ -280,6 +280,20 @@ app.post("/api/v1/admin/users/:id/delete-avatar", (req, res, next) => {
     .catch((err) => {
       console.log(111, err);
     });
+});
+
+app.post(
+  "/api/v1/products",
+  upload.single("image"),
+  uploadFile,
+  validationProduct,
+  (req, res) => {
+    const product = { ...req.body };
+  }
+);
+
+app.use((err, req, res, next) => {
+  console.log("error product", err);
 });
 
 app.listen(1111, () => {
